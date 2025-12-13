@@ -6,7 +6,7 @@ A projekt célja a modern Python szoftverfejlesztési eszközök és paradigmák
 
 ---
 
-## 🎯 Funkciók
+Funkciók:
 
 - Időjárási adatok lekérése külső API-ból (OpenWeatherMap)
 - Adatok tartós tárolása adatbázisban (SQLite)
@@ -18,7 +18,7 @@ A projekt célja a modern Python szoftverfejlesztési eszközök és paradigmák
 
 ---
 
-## 🧱 Alkalmazott technológiák
+Alkalmazott technológiák:
 
 - **Backend:** FastAPI, SQLAlchemy, Pydantic
 - **Frontend:** Streamlit
@@ -28,68 +28,51 @@ A projekt célja a modern Python szoftverfejlesztési eszközök és paradigmák
 - **Külső API:** OpenWeatherMap
 - **Konfiguráció:** `.env` fájl és környezeti változók
 
----
 
-## 📁 Projektstruktúra
-
-weather-monitor/
-├── backend/
-│   ├──__pycache__
-│   ├── api/
-│   ├── config
-│   ├── core
-│   ├── db/
-│   ├── models/
-│   ├── services/  
-│   ├── __init__
-│   └── main.py
-├── frontend/
-│   └── app.py
-├── tests/
-│   ├── conftest.py
-│   ├── test_database.py
-│   └── test_weather_service.py
-├── .env
-├── .env.example
-├── README.md
-├── requirements.txt
-└── weather.db
-
-⚙️ Telepítés és futtatás
-1️⃣ Virtuális környezet létrehozása
+Telepítés és futtatás:
+Virtuális környezet létrehozása:
 python3 -m venv venv
 source venv/bin/activate
 
-2️⃣ Függőségek telepítése
+Függőségek telepítése:
 pip install -r requirements.txt
 
-3️⃣ Környezeti változók beállítása
+Környezeti változók beállítása:
 Hozz létre egy .env fájlt a projekt gyökerében az alábbi minta alapján:
 OPENWEATHER_API_KEY=IDE_JÖN_A_SAJÁT_KULCSOD
 
-🚀 Backend indítása (FastAPI)
+Backend indítása (FastAPI):
 uvicorn backend.main:app --reload
 Backend elérhető: http://127.0.0.1:8000
+Megjegyzés:
+A Streamlit alkalmazás cloud környezetben nem HTTP-n keresztül hívja a FastAPI-t,
+hanem közvetlenül a backend/services réteget használja.
 
-🌐 Frontend indítása (Streamlit)
+
+Frontend indítása (Streamlit):
 streamlit run frontend/app.py
 
-🤖 Automatizáció
+Automatizáció:
 
 A backend indításakor egy háttérfolyamat automatikusan frissíti az időjárási adatokat, és elmenti azokat az adatbázisba.
 
-🧪 Tesztelés
+Tesztelés:
 
 Egységtesztek futtatása: pytest
 A projekt parametrizált tesztet is tartalmaz @pytest.mark.parametrize használatával.
 
-📊 Vizualizáció
+Vizualizáció:
 
 A Streamlit felület diagramokon és statisztikákon keresztül jeleníti meg a mentett időjárási adatokat.
 
-☁️ Deploy
+Deploy:
 
-Backend: Render.com
-Frontend: Streamlit Cloud
+A projekt Streamlit Cloud környezetben került deployolásra.
 
-(A deploy linkek a beadáskor kerülnek megadásra.)
+A FastAPI backend és a Streamlit frontend egy közös futtatókörnyezetben működik,
+azonban a rétegezett architektúra (api / services / models) változatlanul megmaradt.
+
+A FastAPI backend önállóan is futtatható lokálisan (backend/main.py),
+azonban a Streamlit Cloud környezetben a frontend közvetlenül
+a backend service layer-t használja HTTP kommunikáció nélkül,
+az ingyenes cloud infrastruktúra korlátai miatt.
