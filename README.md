@@ -70,9 +70,11 @@ Deploy:
 A projekt Streamlit Cloud környezetben került deployolásra.
 
 A FastAPI backend és a Streamlit frontend egy közös futtatókörnyezetben működik,
-azonban a rétegezett architektúra (api / services / models) változatlanul megmaradt.
+azonban a mikroszerviz-szemléletű, rétegezett architektúra (api / services / models)
+változatlanul megmaradt.
 
-A FastAPI backend önállóan is futtatható lokálisan (backend/main.py),
-azonban a Streamlit Cloud környezetben a frontend közvetlenül
-a backend service layer-t használja HTTP kommunikáció nélkül,
-az ingyenes cloud infrastruktúra korlátai miatt.
+A FastAPI alkalmazás önállóan is futtatható lokálisan (uvicorn használatával),
+a cloud deploy során azonban az üzleti logikát a Streamlit alkalmazás
+közvetlenül a service layer-en keresztül használja.
+
+Ez a megoldás az ingyenes cloud infrastruktúra korlátai miatt került alkalmazásra.
