@@ -13,6 +13,8 @@ logging.basicConfig(
 
 app = FastAPI()
 
+print("APP DB URL:", engine.url)
+
 Base.metadata.create_all(bind=engine)
 
 @app.on_event("startup")

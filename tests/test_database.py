@@ -5,6 +5,8 @@ from weather_monitor.backend.models.weather import Weather
 def test_database_insert():
     db = SessionLocal()
 
+    print("TEST DB URL:", db.bind.url)
+
     record = Weather(
         city="TestCity",
         temperature=10,
