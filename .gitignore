@@ -19,4 +19,4 @@ __pycache__/
 .vscode/
 
 # Database
-weather.db
+*.db

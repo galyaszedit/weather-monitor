@@ -1,7 +1,8 @@
 from fastapi import FastAPI
 from backend.services.scheduler import start_scheduler
-from backend.db.database import engine, Base
-from backend.models import weather
+from weather_monitor.backend.db.database import Base
+from weather_monitor.backend.models.weather import Weather
+
 from backend.services.weather_service import fetch_weather
 from backend.db.database import SessionLocal
 

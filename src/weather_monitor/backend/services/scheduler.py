@@ -2,9 +2,9 @@ import time
 import threading
 import logging
 
-from backend.services.weather_service import fetch_weather
-from backend.db.database import SessionLocal
-from backend.models.weather import Weather
+from weather_monitor.backend.services.weather_service import fetch_weather
+from weather_monitor.backend.db.database import SessionLocal
+from weather_monitor.backend.models.weather import Weather
 
 logger = logging.getLogger(__name__)
 

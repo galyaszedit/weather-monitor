@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, Float, DateTime
 from datetime import datetime
 
-from backend.db.database import Base
+from weather_monitor.backend.db.database import Base
 
 
 class Weather(Base):
