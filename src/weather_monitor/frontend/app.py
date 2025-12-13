@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import sys
 from pathlib import Path
+
 ROOT_DIR = Path(__file__).resolve().parents[2]
 sys.path.append(str(ROOT_DIR))
 
@@ -28,14 +29,39 @@ if st.button("Lekérdez"):
         st.error(f"Hiba történt: {e}")
 
 st.divider()
-st.subheader("📊 Korábbi mérések")
 
 db = SessionLocal()
-history = db.query(Weather).order_by(Weather.created_at).all()
-db.close()
+
+
+cities = (
+    db.query(Weather.city)
+    .distinct()
+    .order_by(Weather.city)
+    .all()
+)
+city_list = [c[0] for c in cities]
+
+if not city_list:
+    st.info("Még nincs mentett adat")
+    db.close()
+    st.stop()
+
+selected_city = st.selectbox(
+    "Válassz várost a korábbi mérésekhez",
+    city_list
+)
+
+st.subheader(f"📊 Korábbi mérések – {selected_city}")
+
+history = (
+    db.query(Weather)
+    .filter(Weather.city == selected_city)
+    .order_by(Weather.created_at)
+    .all()
+)
 
 if history:
-    df = pd.DataFrame(
+    df_city = pd.DataFrame(
         [
             {
                 "created_at": w.created_at,
@@ -44,7 +70,39 @@ if history:
             for w in history
         ]
     )
-    df["created_at"] = pd.to_datetime(df["created_at"])
-    st.line_chart(df.set_index("created_at")["temperature"])
+    df_city["created_at"] = pd.to_datetime(df_city["created_at"])
+    st.line_chart(df_city.set_index("created_at")["temperature"])
 else:
-    st.info("Még nincs mentett adat")
+    st.info("Ehhez a városhoz még nincs adat")
+
+st.divider()
+
+st.subheader("📈 Hőmérséklet alakulása városonként")
+
+history_all = (
+    db.query(Weather)
+    .order_by(Weather.created_at)
+    .all()
+)
+db.close()
+
+df_all = pd.DataFrame(
+    [
+        {
+            "created_at": w.created_at,
+            "temperature": w.temperature,
+            "city": w.city,
+        }
+        for w in history_all
+    ]
+)
+
+df_all["created_at"] = pd.to_datetime(df_all["created_at"])
+
+st.line_chart(
+    df_all.pivot(
+        index="created_at",
+        columns="city",
+        values="temperature"
+    )
+)
