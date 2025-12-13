@@ -1,9 +1,14 @@
 import streamlit as st
 import pandas as pd
+import sys
+from pathlib import Path
+ROOT_DIR = Path(__file__).resolve().parents[2]
+sys.path.append(str(ROOT_DIR))
 
 from weather_monitor.backend.services.weather_service import fetch_weather
 from weather_monitor.backend.db.database import SessionLocal
 from weather_monitor.backend.models.weather import Weather
+
 
 st.set_page_config(page_title="Weather Monitor", layout="centered")
 
