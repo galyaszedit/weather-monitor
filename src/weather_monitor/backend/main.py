@@ -1,12 +1,10 @@
 from fastapi import FastAPI
-from backend.services.scheduler import start_scheduler
-from weather_monitor.backend.db.database import Base
-from weather_monitor.backend.models.weather import Weather
-
-from backend.services.weather_service import fetch_weather
-from backend.db.database import SessionLocal
-
 import logging
+
+from weather_monitor.backend.services.scheduler import start_scheduler
+from weather_monitor.backend.db.database import Base, engine, SessionLocal
+from weather_monitor.backend.models.weather import Weather
+from weather_monitor.backend.services.weather_service import fetch_weather
 
 logging.basicConfig(
     level=logging.INFO,
@@ -17,7 +15,10 @@ app = FastAPI()
 
 Base.metadata.create_all(bind=engine)
 
-start_scheduler()
+@app.on_event("startup")
+def startup_event():
+    start_scheduler()
+
 
 @app.get("/")
 def root():
@@ -29,7 +30,7 @@ def get_weather(city: str):
     db = SessionLocal()
     data = fetch_weather(city)
 
-    record = weather.Weather(
+    record = Weather(
         city=data["city"],
         temperature=data["temperature"],
         condition=data["condition"],
@@ -46,7 +47,7 @@ def get_weather(city: str):
 @app.get("/weather/history")
 def weather_history():
     db = SessionLocal()
-    records = db.query(weather.Weather).all()
+    records = db.query(Weather).all()
     db.close()
 
     return records

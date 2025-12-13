@@ -1,5 +1,5 @@
-from backend.db.database import SessionLocal
-from backend.models.weather import Weather
+from weather_monitor.backend.db.database import SessionLocal
+from weather_monitor.backend.models.weather import Weather
 
 
 def test_database_insert():
@@ -15,7 +15,9 @@ def test_database_insert():
     db.commit()
 
     result = db.query(Weather).filter_by(city="TestCity").first()
+    assert result is not None
 
+    db.delete(result)
+    db.commit()
     db.close()
 
-    assert result is not None

@@ -1,4 +1,4 @@
-from backend.services.weather_service import fetch_weather
+from weather_monitor.backend.services.weather_service import fetch_weather
 import pytest
 
 

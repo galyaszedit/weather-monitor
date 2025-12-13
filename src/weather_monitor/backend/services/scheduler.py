@@ -8,31 +8,32 @@ from weather_monitor.backend.models.weather import Weather
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_CITY = "Budapest"
+CITIES = ["Budapest", "Miskolc", "Debrecen"]
 INTERVAL_SECONDS = 3600  # 1 óra
 
 
 def weather_job():
     while True:
-        try:
-            logger.info("Automatikus időjárás-frissítés indul")
+        logger.info("Automatikus időjárás-frissítés indul")
 
-            data = fetch_weather(DEFAULT_CITY)
+        for city in CITIES:
+            try:
+                data = fetch_weather(city)
 
-            db = SessionLocal()
-            record = Weather(
-                city=data["city"],
-                temperature=data["temperature"],
-                condition=data["condition"],
-            )
-            db.add(record)
-            db.commit()
-            db.close()
+                db = SessionLocal()
+                record = Weather(
+                    city=data["city"],
+                    temperature=data["temperature"],
+                    condition=data["condition"],
+                )
+                db.add(record)
+                db.commit()
+                db.close()
 
-            logger.info("Időjárás mentve az adatbázisba")
+                logger.info(f"Sikeres mentés: {city}")
 
-        except Exception as e:
-            logger.exception("Hiba az automatikus frissítés során")
+            except Exception:
+                logger.exception(f"Hiba a(z) {city} frissítésekor")
 
         time.sleep(INTERVAL_SECONDS)
 
@@ -40,4 +41,3 @@ def weather_job():
 def start_scheduler():
     thread = threading.Thread(target=weather_job, daemon=True)
     thread.start()
-

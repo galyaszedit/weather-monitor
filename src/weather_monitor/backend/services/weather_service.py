@@ -2,9 +2,11 @@ import os
 import requests
 import logging
 
-from dotenv import load_dotenv
-
-load_dotenv()
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass  # prod környezetben nem kell
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +42,7 @@ def fetch_weather(city: str) -> dict:
         logger.error(f"Weather API error: {e}")
         return _fallback_weather(city)
 
-    except Exception as e:
+    except Exception:
         logger.exception("Unexpected error")
         return _fallback_weather(city)
 
@@ -49,5 +51,5 @@ def _fallback_weather(city: str) -> dict:
     return {
         "city": city,
         "temperature": 22,
-        "condition": "mock adat (API key még nem aktív)",
+        "condition": "mock adat (API key nem elérhető)",
     }
