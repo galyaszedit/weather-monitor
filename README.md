@@ -56,17 +56,8 @@ A Streamlit felület diagramokon és statisztikákon keresztül jeleníti meg a 
 
 Deploy:
 
-A projekt Streamlit Cloud környezetben került deployolásra.
+- **Backend (FastAPI)**: Render  
+  https://weather-monitor-backend-87u3.onrender.com
 
-A Streamlit frontend a FastAPI backend REST végpontjait HTTP kéréseken keresztül hívja meg.
-A backend önálló szolgáltatásként futtatható (uvicorn segítségével), a frontend és backend
-rétegek logikailag elkülönülnek.
-
-A mikroszerviz-szemléletű, rétegezett architektúra (api / services / models)
-a lokális és a cloud környezetben is változatlan marad.
-
-Megjegyzés:
-
-Az ingyenes cloud környezetek bizonyos korlátozásai miatt a deploy során
-egyes komponensek futtatási módja eltérhet a lokális fejlesztéstől,
-azonban az alkalmazás architektúrája és rétegezése változatlan marad.
+- **Frontend (Streamlit)**: Streamlit Cloud  
+  https://weather-monitor-faa9yxzb4fn4g6pnmcdj8t.streamlit.app/

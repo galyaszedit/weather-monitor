@@ -2,7 +2,7 @@ import streamlit as st
 import requests
 import pandas as pd
 
-BACKEND_URL = "http://localhost:8000"
+BACKEND_URL = "https://weather-monitor-backend-87u3.onrender.com"
 
 st.set_page_config(page_title="Időjárás monitor", layout="centered")
 st.title("🌦️ Időjárás monitor")
