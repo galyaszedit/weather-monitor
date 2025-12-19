@@ -52,7 +52,7 @@ A projekt parametrizált tesztet is tartalmaz @pytest.mark.parametrize használa
 
 Vizualizáció:
 
-A Streamlit felület diagramokon és statisztikákon keresztül jeleníti meg a mentett időjárási adatokat.
+A Streamlit felület jeleníti meg az időjárási adatokat.
 
 Deploy:
 
