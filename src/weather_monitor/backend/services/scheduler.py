@@ -8,7 +8,7 @@ from weather_monitor.backend.models.weather import Weather
 
 logger = logging.getLogger(__name__)
 
-CITIES = ["Budapest", "Miskolc", "Debrecen"]
+CITIES = ["Budapest"]
 INTERVAL_SECONDS = 3600  # 1 óra
 
 

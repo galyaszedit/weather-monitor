@@ -1,32 +1,26 @@
 # Weather Monitor – Python Microservice Project
 
-Ez a projekt egy mikroszerviz-szemléletű Python alkalmazás, amely aktuális időjárási adatokat gyűjt, tárol és jelenít meg webes felületen.
+Ez a projekt egy mikroszerviz-szerű Python alkalmazás, amely egy időjárás-monitorozó rendszert valósít meg.
+A cél a modern Python fejlesztési technológiák és paradigmák gyakorlati bemutatása.
 
-A projekt célja a modern Python szoftverfejlesztési eszközök és paradigmák gyakorlati bemutatása.
+Architektúra
 
----
+A rendszer az alábbi komponensekből áll:
 
-Funkciók:
-
-- Időjárási adatok lekérése külső API-ból (OpenWeatherMap)
-- Adatok tartós tárolása adatbázisban (SQLite)
-- Automatikus, időzített adatfrissítés
-- REST API FastAPI-val
-- Webes felület Streamlit segítségével
-- Statisztikák és vizualizációk megjelenítése
-- Egységtesztek pytest használatával
+- **Backend**: FastAPI alapú REST API
+- **Frontend**: Streamlit webes felület
+- **Adatbázis**: SQLite + SQLAlchemy ORM
+- **Automatizáció**: Időzített háttérfolyamat (scheduler, threading)
+- **Külső API**: OpenWeatherMap API
+- **Tesztelés**: pytest
 
 ---
 
-Alkalmazott technológiák:
+Használt paradigmák
 
-- **Backend:** FastAPI, SQLAlchemy, Pydantic
-- **Frontend:** Streamlit
-- **Adatbázis:** SQLite
-- **Automatizáció:** háttérfolyamat / időzített frissítés
-- **Tesztelés:** pytest
-- **Külső API:** OpenWeatherMap
-- **Konfiguráció:** `.env` fájl és környezeti változók
+- **Procedurális**: vezérlési logika, szkriptek
+- **Funkcionális**: tiszta függvények (pl. fetch_weather)
+- **Objektumorientált**: SQLAlchemy modellek
 
 
 Telepítés és futtatás:
@@ -38,16 +32,11 @@ Függőségek telepítése:
 pip install -r requirements.txt
 
 Környezeti változók beállítása:
-Hozz létre egy .env fájlt a projekt gyökerében az alábbi minta alapján:
 OPENWEATHER_API_KEY=IDE_JÖN_A_SAJÁT_KULCSOD
 
 Backend indítása (FastAPI):
 uvicorn backend.main:app --reload
 Backend elérhető: http://127.0.0.1:8000
-Megjegyzés:
-A Streamlit alkalmazás cloud környezetben nem HTTP-n keresztül hívja a FastAPI-t,
-hanem közvetlenül a backend/services réteget használja.
-
 
 Frontend indítása (Streamlit):
 streamlit run frontend/app.py
@@ -69,12 +58,15 @@ Deploy:
 
 A projekt Streamlit Cloud környezetben került deployolásra.
 
-A FastAPI backend és a Streamlit frontend egy közös futtatókörnyezetben működik,
-azonban a mikroszerviz-szemléletű, rétegezett architektúra (api / services / models)
-változatlanul megmaradt.
+A Streamlit frontend a FastAPI backend REST végpontjait HTTP kéréseken keresztül hívja meg.
+A backend önálló szolgáltatásként futtatható (uvicorn segítségével), a frontend és backend
+rétegek logikailag elkülönülnek.
 
-A FastAPI alkalmazás önállóan is futtatható lokálisan (uvicorn használatával),
-a cloud deploy során azonban az üzleti logikát a Streamlit alkalmazás
-közvetlenül a service layer-en keresztül használja.
+A mikroszerviz-szemléletű, rétegezett architektúra (api / services / models)
+a lokális és a cloud környezetben is változatlan marad.
 
-Ez a megoldás az ingyenes cloud infrastruktúra korlátai miatt került alkalmazásra.
+Megjegyzés:
+
+Az ingyenes cloud környezetek bizonyos korlátozásai miatt a deploy során
+egyes komponensek futtatási módja eltérhet a lokális fejlesztéstől,
+azonban az alkalmazás architektúrája és rétegezése változatlan marad.

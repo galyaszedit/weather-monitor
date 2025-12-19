@@ -1,6 +1,9 @@
 import os
 import requests
 import logging
+from datetime import datetime, timedelta
+
+from weather_monitor.backend.models.weather import Weather
 
 try:
     from dotenv import load_dotenv
@@ -19,17 +22,20 @@ def fetch_weather(city: str) -> dict:
         logger.warning("API key missing, using fallback")
         return _fallback_weather(city)
 
+    params = {
+        "q": city,
+        "appid": OPENWEATHER_API_KEY,
+        "units": "metric",
+        "lang": "hu",
+    }
+
     try:
-        params = {
-            "q": city,
-            "appid": OPENWEATHER_API_KEY,
-            "units": "metric",
-            "lang": "hu",
-        }
-
         response = requests.get(BASE_URL, params=params, timeout=5)
-        response.raise_for_status()
 
+        if response.status_code == 404:
+            return {"error": "CITY_NOT_FOUND"}
+
+        response.raise_for_status()
         data = response.json()
 
         return {
@@ -39,15 +45,36 @@ def fetch_weather(city: str) -> dict:
         }
 
     except requests.exceptions.HTTPError as e:
-        logger.error(f"Weather API error: {e}")
+        logger.error(f"Weather API HTTP error: {e}")
         return _fallback_weather(city)
 
-    except Exception:
-        logger.exception("Unexpected error")
+    except Exception as e:
+        logger.exception("Unexpected error during weather fetch")
         return _fallback_weather(city)
+
+
+
+def has_recent_data(db, city: str, hours: int = 1) -> bool:
+    """
+    Megnézi, van-e az adott városra friss (pl. 1 órán belüli) adat az adatbázisban
+    """
+    latest = (
+        db.query(Weather)
+        .filter(Weather.city == city)
+        .order_by(Weather.created_at.desc())
+        .first()
+    )
+
+    if not latest:
+        return False
+
+    return latest.created_at > datetime.utcnow() - timedelta(hours=hours)
 
 
 def _fallback_weather(city: str) -> dict:
+    """
+    Mock adat, ha nincs API key vagy hiba van
+    """
     return {
         "city": city,
         "temperature": 22,

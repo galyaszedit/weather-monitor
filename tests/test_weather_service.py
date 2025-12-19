@@ -16,3 +16,14 @@ def test_fetch_weather_multiple_cities(city):
 
     assert data["city"]
     assert isinstance(data["temperature"], (int, float))
+
+def test_fetch_weather_city_name_matches():
+    data = fetch_weather("Budapest")
+
+    assert data["city"].lower() == "budapest"
+
+
+def test_fetch_weather_temperature_is_reasonable():
+    data = fetch_weather("Budapest")
+
+    assert -50 < data["temperature"] < 60

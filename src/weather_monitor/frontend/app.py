@@ -1,69 +1,49 @@
 import streamlit as st
+import requests
 import pandas as pd
-import sys
-from pathlib import Path
 
-ROOT_DIR = Path(__file__).resolve().parents[2]
-sys.path.append(str(ROOT_DIR))
+BACKEND_URL = "http://localhost:8000"
 
-from weather_monitor.backend.services.weather_service import fetch_weather
-from weather_monitor.backend.db.database import SessionLocal
-from weather_monitor.backend.models.weather import Weather
+st.set_page_config(page_title="Időjárás monitor", layout="centered")
+st.title("🌦️ Időjárás monitor")
 
-st.set_page_config(page_title="Weather Monitor", layout="centered")
-
-st.title("Weather Monitor")
-
-
-if "active_city" not in st.session_state:
-    st.session_state.active_city = "Budapest"
-
-city_input = st.text_input(
+# ─────────────────────────────────────────────
+# INPUT
+# ─────────────────────────────────────────────
+city = st.text_input(
     "Város neve",
-    value=st.session_state.active_city
+    placeholder="Írj be egy városnevet (pl. Budapest)",
 )
+city = city.strip().title()
 
-if st.button("Lekérdez"):
-    try:
-        data = fetch_weather(city_input)
-        st.session_state.active_city = data["city"]
+if not city:
+    st.info("👆 Kezdj el gépelni egy városnevet")
+    st.stop()
 
-        st.subheader(f"Aktuális időjárás – {data['city']}")
-        st.metric("Hőmérséklet (°C)", data["temperature"])
-        st.write("Állapot:", data["condition"])
-
-    except Exception as e:
-        st.error(f"Hiba történt: {e}")
-
-st.divider()
-
-db = SessionLocal()
-
-active_city = st.session_state.active_city
-
-st.subheader(f"Korábbi mérések – {active_city}")
-
-history = (
-    db.query(Weather)
-    .filter(Weather.city == active_city)
-    .order_by(Weather.created_at)
-    .all()
-)
-
-if history:
-    df = pd.DataFrame(
-        [{
-            "időpont": w.created_at,
-            "hőmérséklet": w.temperature
-        } for w in history]
+# ─────────────────────────────────────────────
+# AKTUÁLIS IDŐJÁRÁS
+# ─────────────────────────────────────────────
+try:
+    response = requests.get(
+        f"{BACKEND_URL}/weather",
+        params={"city": city},
+        timeout=5,
     )
+    weather = response.json()
+except Exception:
+    st.error("Nem érem el a backendet 😢 Fut a FastAPI?")
+    st.stop()
 
-    df["időpont"] = pd.to_datetime(df["időpont"])
+# ⛔ ERROR ELLENŐRZÉS AZONNAL
+if "error" in weather:
+    st.error("Ilyen várost nem ismerek. Ne szórakozz velem 😄")
+    st.stop()
 
-    st.line_chart(
-        df.set_index("időpont")["hőmérséklet"]
-    )
-else:
-    st.info("Ehhez a városhoz még nincs adat.")
+# ─────────────────────────────────────────────
+# MEGJELENÍTÉS – AKTUÁLIS
+# ─────────────────────────────────────────────
+st.subheader(f"📍 {weather['city']} – aktuális időjárás")
+st.metric("🌡️ Hőmérséklet (°C)", weather["temperature"])
+st.write(weather["condition"])
 
-db.close()
+# ────────────────────────────────────
