@@ -53,24 +53,6 @@ def fetch_weather(city: str) -> dict:
         return _fallback_weather(city)
 
 
-
-def has_recent_data(db, city: str, hours: int = 1) -> bool:
-    """
-    Megnézi, van-e az adott városra friss (pl. 1 órán belüli) adat az adatbázisban
-    """
-    latest = (
-        db.query(Weather)
-        .filter(Weather.city == city)
-        .order_by(Weather.created_at.desc())
-        .first()
-    )
-
-    if not latest:
-        return False
-
-    return latest.created_at > datetime.utcnow() - timedelta(hours=hours)
-
-
 def _fallback_weather(city: str) -> dict:
     """
     Mock adat, ha nincs API key vagy hiba van

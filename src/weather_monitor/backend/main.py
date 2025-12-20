@@ -79,3 +79,4 @@ def weather_history(city: str):
 
     db.close()
     return records
+

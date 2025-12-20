@@ -14,6 +14,7 @@ city = st.text_input(
     "Város neve",
     placeholder="Írj be egy városnevet (pl. Budapest)",
 )
+
 city = city.strip().title()
 
 if not city:
@@ -31,19 +32,40 @@ try:
     )
     weather = response.json()
 except Exception:
-    st.error("Nem érem el a backendet 😢 Fut a FastAPI?")
+    st.error("Nem érem el a backendet 😢")
     st.stop()
 
-# ⛔ ERROR ELLENŐRZÉS AZONNAL
 if "error" in weather:
     st.error("Ilyen várost nem ismerek. Ne szórakozz velem 😄")
     st.stop()
 
-# ─────────────────────────────────────────────
-# MEGJELENÍTÉS – AKTUÁLIS
-# ─────────────────────────────────────────────
 st.subheader(f"📍 {weather['city']} – aktuális időjárás")
-st.metric("🌡️ Hőmérséklet (°C)", weather["temperature"])
-st.write(weather["condition"])
 
-# ────────────────────────────────────
+col1, col2 = st.columns(2)
+col1.metric("🌡️ Hőmérséklet (°C)", weather["temperature"])
+col2.write(f"☁️ {weather['condition']}")
+
+st.divider()
+
+# ─────────────────────────────────────────────
+# TÖRTÉNETI ADATOK + GRAFIKON
+# ─────────────────────────────────────────────
+try:
+    history = requests.get(
+        f"{BACKEND_URL}/weather/history",
+        params={"city": city},
+        timeout=5,
+    ).json()
+except Exception:
+    history = []
+
+if history:
+    df = pd.DataFrame(history)
+    df["created_at"] = pd.to_datetime(df["created_at"])
+
+    st.subheader("📈 Hőmérséklet alakulása (mentett adatok)")
+    st.line_chart(
+        df.set_index("created_at")["temperature"]
+    )
+else:
+    st.info("Még nincs elég adat a grafikonhoz. Idővel megjelenik.")
